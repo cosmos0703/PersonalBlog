@@ -1,0 +1,4 @@
+env/
+static/
+local.settings.json
+package.json
