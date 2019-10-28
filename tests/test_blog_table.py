@@ -64,3 +64,52 @@ class TestBlogTable(Testbase):
         t.remove_tag(email, title, 'tag')
         entity = t.get_blog(email, title)
         self.assertEqual(entity.get('Tags'), json.dumps([]))
+
+    def test_list_blogs_by_author(self):
+        email = 'email@pristine.com'
+        title = 'test_list_blogs_by_author'
+        text = 'test_list_blogs_by_author'
+        t = BlogTable(TestBlogTable.TestTableName)
+        t.add_blog(email, title, text)
+        titles = t.list_blogs_by_author(email)
+        self.assertIn(title, titles)
+
+    def test_list_blogs_by_separated_author(self):
+        content = {
+            "userA": {
+                'email': 'email_a@pristine.com',
+                'title': 'test_list_blogs_by_separated_author_a',
+                'text': 'test_list_blogs_by_separated_author_a'
+            },
+            "userB": {
+                'email': 'email_b@pristine.com',
+                'title': 'test_list_blogs_by_separated_author_b',
+                'text': 'test_list_blogs_by_separated_author_b'
+            }
+        }
+        t = BlogTable(TestBlogTable.TestTableName)
+        t.add_blog(**content['userA'])
+        t.add_blog(**content['userB'])
+        titles = t.list_blogs_by_author(content['userA']['email'])
+        self.assertIn(content['userA']['title'], titles)
+        self.assertNotIn(content['userB']['title'], titles)
+
+    def test_list_all_blogs(self):
+        content = {
+            "userA": {
+                'email': 'email_a@pristine.com',
+                'title': 'test_list_all_blogs_a',
+                'text': 'test_list_all_blogs_a'
+            },
+            "userB": {
+                'email': 'email_b@pristine.com',
+                'title': 'test_list_all_blogs_b',
+                'text': 'test_list_all_blogs_b'
+            }
+        }
+        t = BlogTable(TestBlogTable.TestTableName)
+        t.add_blog(**content['userA'])
+        t.add_blog(**content['userB'])
+        titles = t.list_blogs()
+        self.assertIn(content['userA']['title'], titles)
+        self.assertIn(content['userB']['title'], titles)

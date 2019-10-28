@@ -1,4 +1,4 @@
-from typing import Set
+from typing import Set, List
 import os
 import json
 from datetime import datetime
@@ -34,6 +34,12 @@ class BlogTable(BaseTable):
         except AzureMissingResourceHttpError:
             return None
 
+    def list_blogs(self):
+        return self._list_blogs(100)
+
+    def list_blogs_by_author(self, email: str):
+        return self._list_blogs_by_author(email)
+
     def add_tag(self, email: str, title: str, tag: str):
         entity = self._service.get_entity(self._table_name, email, title)
         tags_json = entity.get('Tags', '[]')
@@ -61,3 +67,15 @@ class BlogTable(BaseTable):
             'LastModifiedUtc': datetime.utcnow().isoformat()
         }
         self._service.merge_entity(self._table_name, task)
+
+    def _list_blogs(self, limit: int):
+        result: List[str] = []
+        entities = self._service.query_entities(self._table_name)
+        result.extend([e.get('Title') for e in entities])
+        return result
+
+    def _list_blogs_by_author(self, email: str):
+        result: List[str] = []
+        entities = self._service.query_entities(self._table_name, f"PartitionKey eq '{email}'")
+        result.extend([e.get('Title') for e in entities])
+        return result
