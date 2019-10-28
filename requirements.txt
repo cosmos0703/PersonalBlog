@@ -1,1 +1,3 @@
-azure-functions
+azure-functions==1.0.4
+azure-storage==0.36.0
+pytest==5.2.2
