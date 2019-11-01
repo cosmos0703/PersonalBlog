@@ -1,4 +1,4 @@
-from typing import Set, List
+from typing import Set, List, Dict
 import os
 import json
 from datetime import datetime
@@ -28,16 +28,16 @@ class BlogTable(BaseTable):
     def remove_blog(self, email: str, title: str):
         self._service.delete_entity(self._table_name, email, title)
 
-    def get_blog(self, email: str, title: str):
+    def get_blog(self, email: str, title: str) -> Dict[str, str]:
         try:
             return self._service.get_entity(self._table_name, email, title)
         except AzureMissingResourceHttpError:
             return None
 
-    def list_blogs(self):
+    def list_blogs(self) -> List[Dict[str, str]]:
         return self._list_blogs(100)
 
-    def list_blogs_by_author(self, email: str):
+    def list_blogs_by_author(self, email: str) -> List[Dict[str, str]]:
         return self._list_blogs_by_author(email)
 
     def add_tag(self, email: str, title: str, tag: str):
